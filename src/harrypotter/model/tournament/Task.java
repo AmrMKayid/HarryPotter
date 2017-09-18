@@ -39,7 +39,7 @@ public abstract class Task {
 		this.champions = champions;
 		map = new Cell[10][10];
 		potions = new ArrayList<Potion>();
-		loadPotions("potions.csv");
+		loadPotions("resources/Potions.csv");
 		allowedMoves = 1;
 
 	}

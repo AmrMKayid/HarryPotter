@@ -33,7 +33,7 @@ public class Tournament {
 
 		champions = new ArrayList<Champion>();
 		spells = new ArrayList<Spell>();
-		loadSpells("spells.csv");
+		loadSpells("resources/Spells.csv");
 
 	}
 

@@ -32,7 +32,7 @@ public class ThirdTask extends Task {
 	public void generateMap() throws IOException {
 
 		initializeAllEmpty();
-		readMap("task3map.csv");
+		readMap("resources/task3map.csv");
 		allocatePotions();
 
 	}
