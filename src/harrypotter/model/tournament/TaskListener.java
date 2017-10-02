@@ -15,6 +15,6 @@ public interface TaskListener {
 
 	public void onFinishingSecondTask(ArrayList<Champion> winners) throws IOException;
 
-	public void onFinishingThirdTask(Champion winner) throws IOException;
+	public void onFinishingThirdTask(Champion winner);
 
 }

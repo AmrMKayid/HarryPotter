@@ -90,7 +90,7 @@ public class Tournament implements TaskListener {
 	public void beginTournament() throws IOException {
 
 		firstTask = new FirstTask(champions);
-		firstTask.setListener((TaskListener) this);
+		firstTask.setListener(this);
 
 	}
 
@@ -99,7 +99,7 @@ public class Tournament implements TaskListener {
 
 		if (!winners.isEmpty()) {
 			secondTask = new SecondTask(winners);
-			secondTask.setListener((TaskListener) this);
+			secondTask.setListener(this);
 		}
 
 	}
@@ -109,7 +109,7 @@ public class Tournament implements TaskListener {
 
 		if (!winners.isEmpty()) {
 			thirdTask = new ThirdTask(winners);
-			thirdTask.setListener((TaskListener) this);
+			thirdTask.setListener(this);
 		}
 
 	}

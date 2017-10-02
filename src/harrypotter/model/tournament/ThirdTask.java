@@ -1,8 +1,10 @@
 package harrypotter.model.tournament;
 
+import harrypotter.exceptions.InCooldownException;
+import harrypotter.exceptions.InvalidTargetCellException;
+import harrypotter.exceptions.OutOfBordersException;
 import harrypotter.model.character.Champion;
 import harrypotter.model.character.Wizard;
-import harrypotter.model.character.WizardListener;
 import harrypotter.model.world.Cell;
 import harrypotter.model.world.ChampionCell;
 import harrypotter.model.world.CupCell;
@@ -18,7 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ThirdTask extends Task implements WizardListener {
+public class ThirdTask extends Task {
 
 	/*
 	 * Constructors
@@ -27,6 +29,8 @@ public class ThirdTask extends Task implements WizardListener {
 
 		super(champions);
 		generateMap();
+
+		setCurrentChamp(getChampions().get(0));
 
 	}
 
@@ -87,15 +91,17 @@ public class ThirdTask extends Task implements WizardListener {
 					if (c <= getChampions().size()) {
 
 						map[i][j] = new ChampionCell(getChampions().get(c - 1));
+						((Wizard) getChampions().get(c - 1))
+								.setLocation(new Point(i, j));
 
 					}
 
 					break;
 
 				default:
-					
+
 					break;
-					
+
 				}
 
 			}
@@ -108,20 +114,27 @@ public class ThirdTask extends Task implements WizardListener {
 		br.close();
 
 	}
-	
-	public void moveForward() throws IOException {
+
+	public void moveForward() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
 
 		Point location = current.getLocation();
 
-		Cell next = getMap()[location.x - 1][location.y];
+		Point newLocation = new Point(location.x - 1, location.y);
+		if (newLocation.x < 0) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the front border.");
+		}
+
+		Cell next = getMap()[newLocation.x][newLocation.y];
 
 		if (next instanceof CupCell) {
 
 			getMap()[location.x][location.y] = new EmptyCell();
-			getMap()[location.x - 1][location.y] = new EmptyCell();
-			current.setLocation(new Point(location.x - 1, location.y));
+			getMap()[newLocation.x][newLocation.y] = new EmptyCell();
+			current.setLocation(new Point(newLocation.x, newLocation.y));
 
 			getChampions().remove(current);
 
@@ -133,19 +146,26 @@ public class ThirdTask extends Task implements WizardListener {
 		}
 	}
 
-	public void moveBackward() throws IOException {
+	public void moveBackward() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
 
 		Point location = current.getLocation();
 
-		Cell next = getMap()[location.x + 1][location.y];
+		Point newLocation = new Point(location.x + 1, location.y);
+		if (newLocation.x > 9) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the back border.");
+		}
+
+		Cell next = getMap()[newLocation.x][newLocation.y];
 
 		if (next instanceof CupCell) {
 
 			getMap()[location.x][location.y] = new EmptyCell();
-			getMap()[location.x + 1][location.y] = new EmptyCell();
-			current.setLocation(new Point(location.x + 1, location.y));
+			getMap()[newLocation.x][newLocation.y] = new EmptyCell();
+			current.setLocation(new Point(newLocation.x, newLocation.y));
 
 			getChampions().remove(current);
 
@@ -157,19 +177,26 @@ public class ThirdTask extends Task implements WizardListener {
 		}
 	}
 
-	public void moveLeft() throws IOException {
+	public void moveLeft() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
 
 		Point location = current.getLocation();
 
-		Cell next = getMap()[location.x][location.y - 1];
+		Point newLocation = new Point(location.x, location.y - 1);
+		if (newLocation.y < 0) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the left border.");
+		}
+
+		Cell next = getMap()[newLocation.x][newLocation.y];
 
 		if (next instanceof CupCell) {
 
 			getMap()[location.x][location.y] = new EmptyCell();
-			getMap()[location.x][location.y - 1] = new EmptyCell();
-			current.setLocation(new Point(location.x, location.y - 1));
+			getMap()[newLocation.x][newLocation.y] = new EmptyCell();
+			current.setLocation(new Point(newLocation.x, newLocation.y));
 
 			getChampions().remove(current);
 
@@ -181,19 +208,26 @@ public class ThirdTask extends Task implements WizardListener {
 		}
 	}
 
-	public void moveRight() throws IOException {
+	public void moveRight() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
 
 		Point location = current.getLocation();
 
-		Cell next = getMap()[location.x][location.y + 1];
+		Point newLocation = new Point(location.x, location.y + 1);
+		if (newLocation.y > 9) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the right border.");
+		}
+
+		Cell next = getMap()[newLocation.x][newLocation.y];
 
 		if (next instanceof CupCell) {
 
 			getMap()[location.x][location.y] = new EmptyCell();
-			getMap()[location.x][location.y + 1] = new EmptyCell();
-			current.setLocation(new Point(location.x, location.y + 1));
+			getMap()[newLocation.x][newLocation.y] = new EmptyCell();
+			current.setLocation(new Point(newLocation.x, newLocation.y));
 
 			getChampions().remove(current);
 
@@ -205,17 +239,31 @@ public class ThirdTask extends Task implements WizardListener {
 		}
 	}
 
-	public void onSlytherinTrait(Direction d) throws IOException {
+	public void onSlytherinTrait(Direction d) throws IOException,
+			InCooldownException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
-		current.setTraitCooldown(10);
 		super.onSlytherinTrait(d);
+		current.setTraitCooldown(10);
 
 	}
 
-	public Object onRavenclawTrait() {
+	public void onHufflepuffTrait() throws InCooldownException {
 
 		Wizard current = (Wizard) getCurrentChamp();
+		super.onHufflepuffTrait();
+		current.setTraitCooldown(0);
+
+	}
+
+	public Object onRavenclawTrait() throws InCooldownException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		if (current.getTraitCooldown() > 0) {
+			throw new InCooldownException(current.getTraitCooldown());
+		}
 
 		ArrayList<Direction> result = new ArrayList<Direction>();
 

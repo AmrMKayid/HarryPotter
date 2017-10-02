@@ -1,9 +1,11 @@
 package harrypotter.model.tournament;
 
+import harrypotter.exceptions.InCooldownException;
+import harrypotter.exceptions.InvalidTargetCellException;
+import harrypotter.exceptions.OutOfBordersException;
 import harrypotter.model.character.Champion;
 import harrypotter.model.character.HufflepuffWizard;
 import harrypotter.model.character.Wizard;
-import harrypotter.model.character.WizardListener;
 import harrypotter.model.magic.Potion;
 import harrypotter.model.world.Cell;
 import harrypotter.model.world.ChampionCell;
@@ -18,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class FirstTask extends Task implements WizardListener {
+public class FirstTask extends Task {
 	
 	/*
 	 * Attributes
@@ -34,8 +36,8 @@ public class FirstTask extends Task implements WizardListener {
 		super(champions);
 		Collections.shuffle(champions);
 		generateMap();
-		setCurrentChamp(getChampions().get(0));
 		
+		setCurrentChamp(getChampions().get(0));
 		markedCells = new ArrayList<Point>();
 		winners = new ArrayList<Champion>();
 		markCells();
@@ -128,7 +130,7 @@ public class FirstTask extends Task implements WizardListener {
 			}
 		}
 	}
-	
+
 	public void fire() {
 
 		Cell[][] map = getMap();
@@ -154,7 +156,7 @@ public class FirstTask extends Task implements WizardListener {
 		}
 
 	}
-	
+
 	public void finalizeAction() throws IOException {
 
 		Wizard current = (Wizard) getCurrentChamp();
@@ -202,18 +204,32 @@ public class FirstTask extends Task implements WizardListener {
 
 	}
 
-	public void onSlytherinTrait(Direction d) throws IOException {
+	public void onSlytherinTrait(Direction d) throws IOException,
+			InCooldownException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) getCurrentChamp();
-		current.setTraitCooldown(6);
 		super.onSlytherinTrait(d);
+		current.setTraitCooldown(6);
 
 	}
 
-	public Object onRavenclawTrait() {
+	public void onHufflepuffTrait() throws InCooldownException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+		super.onHufflepuffTrait();
+		current.setTraitCooldown(3);
+
+	}
+
+	public Object onRavenclawTrait() throws InCooldownException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+		if (current.getTraitCooldown() > 0) {
+			throw new InCooldownException(current.getTraitCooldown());
+		}
 
 		setTraitActivated(true);
-		Wizard current = (Wizard) getCurrentChamp();
 		current.setTraitCooldown(5);
 		return markedCells;
 

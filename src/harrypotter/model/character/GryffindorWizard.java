@@ -1,5 +1,7 @@
 package harrypotter.model.character;
 
+import harrypotter.exceptions.InCooldownException;
+
 public class GryffindorWizard extends Wizard implements Champion {
 
 	/*
@@ -14,7 +16,7 @@ public class GryffindorWizard extends Wizard implements Champion {
 	/*
 	 * Methods
 	 */
-	public void useTrait() {
+	public void useTrait() throws InCooldownException{
 		if (getListener() != null)
 			getListener().onGryffindorTrait();
 

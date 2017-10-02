@@ -5,6 +5,11 @@
 
 package harrypotter.model.tournament;
 
+import harrypotter.exceptions.InCooldownException;
+import harrypotter.exceptions.InvalidTargetCellException;
+import harrypotter.exceptions.NotEnoughIPException;
+import harrypotter.exceptions.OutOfBordersException;
+import harrypotter.exceptions.OutOfRangeException;
 import harrypotter.model.character.Champion;
 import harrypotter.model.character.HufflepuffWizard;
 import harrypotter.model.character.Wizard;
@@ -21,6 +26,7 @@ import harrypotter.model.world.Direction;
 import harrypotter.model.world.EmptyCell;
 import harrypotter.model.world.Obstacle;
 import harrypotter.model.world.ObstacleCell;
+import harrypotter.model.world.WallCell;
 
 import java.awt.Point;
 import java.io.BufferedReader;
@@ -57,7 +63,7 @@ public abstract class Task implements WizardListener {
 		for (int i = 0; i < champions.size(); i++) {
 
 			Wizard current = (Wizard) champions.get(i);
-			current.setListener((WizardListener) this);
+			current.setListener(this);
 			current.setHp(current.getDefaultHp());
 			current.setIp(current.getDefaultIp());
 			current.setTraitCooldown(0);
@@ -160,86 +166,142 @@ public abstract class Task implements WizardListener {
 
 	}
 	
-	public void moveForward() throws IOException {
+	public void moveForward() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) currentChamp;
 		Point location = current.getLocation();
 
-		getMap()[location.x][location.y] = new EmptyCell();
 		Point newLocation = new Point(location.x - 1, location.y);
-		current.setLocation(newLocation);
+		if (newLocation.x < 0) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the front border.");
+		}
+
+		if (getMap()[newLocation.x][newLocation.y] instanceof ChampionCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof WallCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof ObstacleCell) {
+			throw new InvalidTargetCellException("Cannot move to "
+					+ getMap()[newLocation.x][newLocation.y].getClass()
+							.getSimpleName());
+
+		}
 
 		if (getMap()[newLocation.x][newLocation.y] instanceof CollectibleCell)
 			current.getInventory().add(
 					((CollectibleCell) getMap()[newLocation.x][newLocation.y])
 							.getCollectible());
 
+		getMap()[location.x][location.y] = new EmptyCell();
 		getMap()[newLocation.x][newLocation.y] = new ChampionCell(currentChamp);
+		current.setLocation(newLocation);
 
 		finalizeAction();
 
 	}
 
-	public void moveBackward() throws IOException {
+	public void moveBackward() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) currentChamp;
 		Point location = current.getLocation();
 
-		getMap()[location.x][location.y] = new EmptyCell();
 		Point newLocation = new Point(location.x + 1, location.y);
-		current.setLocation(newLocation);
+		if (newLocation.x > 9) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the back border.");
+		}
+
+		if (getMap()[newLocation.x][newLocation.y] instanceof ChampionCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof WallCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof ObstacleCell) {
+			throw new InvalidTargetCellException("Cannot move to "
+					+ getMap()[newLocation.x][newLocation.y].getClass()
+							.getSimpleName());
+
+		}
 
 		if (getMap()[newLocation.x][newLocation.y] instanceof CollectibleCell)
 			current.getInventory().add(
 					((CollectibleCell) getMap()[newLocation.x][newLocation.y])
 							.getCollectible());
 
+		getMap()[location.x][location.y] = new EmptyCell();
 		getMap()[newLocation.x][newLocation.y] = new ChampionCell(currentChamp);
+		current.setLocation(newLocation);
 
 		finalizeAction();
 
 	}
 
-	public void moveLeft() throws IOException {
+	public void moveLeft() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) currentChamp;
 		Point location = current.getLocation();
 
-		getMap()[location.x][location.y] = new EmptyCell();
 		Point newLocation = new Point(location.x, location.y - 1);
-		current.setLocation(newLocation);
+		if (newLocation.y < 0) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the left border.");
+		}
+
+		if (getMap()[newLocation.x][newLocation.y] instanceof ChampionCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof WallCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof ObstacleCell) {
+			throw new InvalidTargetCellException("Cannot move to "
+					+ getMap()[newLocation.x][newLocation.y].getClass()
+							.getSimpleName());
+
+		}
 
 		if (getMap()[newLocation.x][newLocation.y] instanceof CollectibleCell)
 			current.getInventory().add(
 					((CollectibleCell) getMap()[newLocation.x][newLocation.y])
 							.getCollectible());
 
+		getMap()[location.x][location.y] = new EmptyCell();
 		getMap()[newLocation.x][newLocation.y] = new ChampionCell(currentChamp);
+		current.setLocation(newLocation);
 
 		finalizeAction();
 
 	}
 
-	public void moveRight() throws IOException {
+	public void moveRight() throws IOException, OutOfBordersException,
+			InvalidTargetCellException {
 
 		Wizard current = (Wizard) currentChamp;
 		Point location = current.getLocation();
 
-		getMap()[location.x][location.y] = new EmptyCell();
 		Point newLocation = new Point(location.x, location.y + 1);
-		current.setLocation(newLocation);
+		if (newLocation.y > 9) {
+			throw new OutOfBordersException(
+					"Cannot move beyond the right border.");
+		}
+
+		if (getMap()[newLocation.x][newLocation.y] instanceof ChampionCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof WallCell
+				|| getMap()[newLocation.x][newLocation.y] instanceof ObstacleCell) {
+			throw new InvalidTargetCellException("Cannot move to "
+					+ getMap()[newLocation.x][newLocation.y].getClass()
+							.getSimpleName());
+
+		}
 
 		if (getMap()[newLocation.x][newLocation.y] instanceof CollectibleCell)
 			current.getInventory().add(
 					((CollectibleCell) getMap()[newLocation.x][newLocation.y])
 							.getCollectible());
 
+		getMap()[location.x][location.y] = new EmptyCell();
 		getMap()[newLocation.x][newLocation.y] = new ChampionCell(currentChamp);
+		current.setLocation(newLocation);
 
 		finalizeAction();
 
 	}
-	
+
 	public void finalizeAction() throws IOException {
 
 		allowedMoves--;
@@ -247,7 +309,7 @@ public abstract class Task implements WizardListener {
 			endTurn();
 
 	}
-	
+
 	public void endTurn() throws IOException {
 
 		if (champions.contains(currentChamp))
@@ -262,7 +324,7 @@ public abstract class Task implements WizardListener {
 		coolDown();
 
 	}
-	
+
 	public void coolDown() {
 
 		Wizard current = (Wizard) currentChamp;
@@ -279,7 +341,7 @@ public abstract class Task implements WizardListener {
 			current.setTraitCooldown(current.getTraitCooldown() - 1);
 
 	}
-	
+
 	public void usePotion(Potion p) {
 
 		Wizard current = ((Wizard) currentChamp);
@@ -287,7 +349,7 @@ public abstract class Task implements WizardListener {
 		current.getInventory().remove(p);
 
 	}
-	
+
 	public Point getTargetPoint(Direction d) {
 
 		Point target = null;
@@ -306,9 +368,26 @@ public abstract class Task implements WizardListener {
 
 	}
 
-	public void castDamagingSpell(DamagingSpell spell, Direction d) throws IOException {
+	public void castDamagingSpell(DamagingSpell spell, Direction d)
+			throws IOException, OutOfBordersException,
+			InvalidTargetCellException, InCooldownException,
+			NotEnoughIPException {
+
+		if (spell.getCoolDown() > 0) {
+			throw new InCooldownException(spell.getCoolDown());
+		}
+
+		if (spell.getCost() > ((Wizard) currentChamp).getIp()) {
+			throw new NotEnoughIPException(spell.getCost(), spell.getCost()
+					- ((Wizard) currentChamp).getIp());
+		}
 
 		Point target = getTargetPoint(d);
+
+		if (target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9) {
+			throw new OutOfBordersException(
+					"Cannot cast a damaging spell on a target beyond the borders.");
+		}
 
 		if (map[target.x][target.y] instanceof ObstacleCell) {
 
@@ -342,6 +421,13 @@ public abstract class Task implements WizardListener {
 			} else {
 				opponent.setHp(newHp);
 			}
+		} else {
+
+			throw new InvalidTargetCellException(
+					"Cannot cast a damaging spell on "
+							+ map[target.x][target.y].getClass()
+									.getSimpleName());
+
 		}
 
 		useSpell(spell);
@@ -350,9 +436,30 @@ public abstract class Task implements WizardListener {
 	}
 
 	public void castRelocatingSpell(RelocatingSpell spell, Direction d,
-			Direction t, int range) throws IOException {
+			Direction t, int range) throws IOException, OutOfBordersException,
+			InvalidTargetCellException, InCooldownException,
+			NotEnoughIPException, OutOfRangeException {
+
+		if (spell.getCoolDown() > 0) {
+			throw new InCooldownException(spell.getCoolDown());
+		}
+
+		if (spell.getCost() > ((Wizard) currentChamp).getIp()) {
+			throw new NotEnoughIPException(spell.getCost(), spell.getCost()
+					- ((Wizard) currentChamp).getIp());
+		}
+
+		if (spell.getRange() < range) {
+			throw new OutOfRangeException(spell.getRange());
+		}
 
 		Point target = getTargetPoint(d);
+
+		if (target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9) {
+			throw new OutOfBordersException(
+					"Cannot cast a relocating spell on a target beyond the borders.");
+		}
+
 		int newX = ((Wizard) currentChamp).getLocation().x;
 		int newY = ((Wizard) currentChamp).getLocation().y;
 
@@ -364,6 +471,19 @@ public abstract class Task implements WizardListener {
 			newY = newY - range;
 		else if (t == Direction.RIGHT)
 			newY = newY + range;
+
+		if (newX < 0 || newX > 9 || newY < 0 || newY > 9) {
+			throw new OutOfBordersException(
+					"Cannot cast a relocating spell with a destination beyond the borders.");
+		}
+
+		if (!(map[newX][newY] instanceof EmptyCell)) {
+
+			throw new InvalidTargetCellException(
+					"Cannot cast a relocating spell with destination "
+							+ map[newX][newY].getClass().getSimpleName());
+
+		}
 
 		if (map[target.x][target.y] instanceof ObstacleCell) {
 
@@ -378,6 +498,13 @@ public abstract class Task implements WizardListener {
 			map[newX][newY] = new ChampionCell(opponent);
 			((Wizard) opponent).setLocation(new Point(newX, newY));
 
+		} else {
+
+			throw new InvalidTargetCellException(
+					"Cannot cast a relocating spell on target "
+							+ map[target.x][target.y].getClass()
+									.getSimpleName());
+
 		}
 
 		map[target.x][target.y] = new EmptyCell();
@@ -388,7 +515,17 @@ public abstract class Task implements WizardListener {
 
 	}
 
-	public void castHealingSpell(HealingSpell spell) throws IOException {
+	public void castHealingSpell(HealingSpell spell) throws IOException,
+			InCooldownException, NotEnoughIPException {
+
+		if (spell.getCoolDown() > 0) {
+			throw new InCooldownException(spell.getCoolDown());
+		}
+
+		if (spell.getCost() > ((Wizard) currentChamp).getIp()) {
+			throw new NotEnoughIPException(spell.getCost(), spell.getCost()
+					- ((Wizard) currentChamp).getIp());
+		}
 
 		Wizard current = (Wizard) currentChamp;
 		int newHp = current.getHp() + spell.getHealingAmount();
@@ -416,21 +553,35 @@ public abstract class Task implements WizardListener {
 
 	}
 
-	public void onGryffindorTrait() {
+	public void onGryffindorTrait() throws InCooldownException {
+
+		Wizard current = (Wizard) currentChamp;
+
+		if (current.getTraitCooldown() > 0) {
+			throw new InCooldownException(current.getTraitCooldown());
+		}
 
 		allowedMoves = 2;
-		((Wizard) currentChamp).setTraitCooldown(4);
+		current.setTraitCooldown(4);
 		traitActivated = true;
 
 	}
 
-	public void onSlytherinTrait(Direction d) throws IOException {
+	public void onSlytherinTrait(Direction d) throws IOException,
+			OutOfBordersException, InvalidTargetCellException,
+			InCooldownException {
 
 		Wizard current = (Wizard) currentChamp;
-		int newX = current.getLocation().x;
-		int newY = current.getLocation().y;
 
-		map[newX][newY] = new EmptyCell();
+		if (current.getTraitCooldown() > 0) {
+			throw new InCooldownException(current.getTraitCooldown());
+		}
+
+		Point location = current.getLocation();
+
+		int newX = location.x;
+		int newY = location.y;
+
 		if (d == Direction.FORWARD)
 			newX -= 2;
 		else if (d == Direction.BACKWARD)
@@ -440,6 +591,22 @@ public abstract class Task implements WizardListener {
 		else if (d == Direction.RIGHT)
 			newY += 2;
 
+		if (newX < 0 || newX > 9 || newY < 0 || newY > 9) {
+
+			throw new OutOfBordersException(
+					"Cannot use the Slytherin trait to move beyond the borders.");
+
+		}
+
+		if (!(map[newX][newY] instanceof EmptyCell)) {
+
+			throw new InvalidTargetCellException(
+					"Cannot use the Slytherin trait to move to "
+							+ map[newX][newY].getClass().getSimpleName());
+
+		}
+
+		map[location.x][location.y] = new EmptyCell();
 		map[newX][newY] = new ChampionCell(currentChamp);
 		current.setLocation(new Point(newX, newY));
 
@@ -449,14 +616,19 @@ public abstract class Task implements WizardListener {
 
 	}
 
-	public void onHufflepuffTrait() {
+	public void onHufflepuffTrait() throws InCooldownException {
+
+		Wizard current = (Wizard) currentChamp;
+
+		if (current.getTraitCooldown() > 0) {
+			throw new InCooldownException(current.getTraitCooldown());
+		}
 
 		traitActivated = true;
-		((Wizard) currentChamp).setTraitCooldown(3);
 
 	}
 
-	public abstract Object onRavenclawTrait();
+	public abstract Object onRavenclawTrait() throws InCooldownException;
 
 	//---------------------- Getter && Setter Methods ----------------------//
 	public ArrayList<Champion> getChampions() {
