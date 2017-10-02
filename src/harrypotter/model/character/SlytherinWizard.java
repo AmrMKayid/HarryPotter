@@ -25,9 +25,8 @@ public class SlytherinWizard extends Wizard implements Champion {
 	 * Methods
 	 */
 	public void useTrait() {
-
-		// TODO: M2
-
+		if (getListener() != null)
+			getListener().onSlytherinTrait(traitDirection);
 	}
 	
 	//---------------------- Getter && Setter Methods ----------------------//

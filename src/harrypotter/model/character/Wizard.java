@@ -25,6 +25,8 @@ public abstract class Wizard {
 	private Point location;						//READ & WRITE
 	private int traitCooldown;					//READ & WRITE
 	
+	private WizardListener listener;
+	
 
 	/*
 	 * Constructors
@@ -142,6 +144,14 @@ public abstract class Wizard {
 
 		this.traitCooldown = traitCooldown;
 
+	}
+	
+	public WizardListener getListener() {
+		return listener;
+	}
+
+	public void setListener(WizardListener listener) {
+		this.listener = listener;
 	}
 	//#####################################################################//
 }
