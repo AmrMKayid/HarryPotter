@@ -15,7 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Tournament {
+public class Tournament implements TaskListener {
 
 	/*
 	 * Attributes

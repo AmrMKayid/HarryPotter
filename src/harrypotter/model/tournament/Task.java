@@ -28,7 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class Task {
+public abstract class Task implements WizardListener {
 
 	/*
 	 * Attributes

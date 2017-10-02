@@ -3,6 +3,7 @@ package harrypotter.model.tournament;
 import harrypotter.model.character.Champion;
 import harrypotter.model.character.HufflepuffWizard;
 import harrypotter.model.character.Wizard;
+import harrypotter.model.character.WizardListener;
 import harrypotter.model.magic.Potion;
 import harrypotter.model.world.Cell;
 import harrypotter.model.world.ChampionCell;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class FirstTask extends Task {
+public class FirstTask extends Task implements WizardListener {
 	
 	/*
 	 * Attributes
