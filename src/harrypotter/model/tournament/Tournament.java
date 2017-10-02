@@ -82,6 +82,43 @@ public class Tournament {
 		br.close();
 
 	}
+	
+	public void addChampion(Champion c) {
+		champions.add(c);
+	}
+	
+	public void beginTournament() throws IOException {
+
+		firstTask = new FirstTask(champions);
+		firstTask.setListener((TaskListener) this);
+
+	}
+
+	public void onFinishingFirstTask(ArrayList<Champion> winners)
+			throws IOException {
+
+		if (!winners.isEmpty()) {
+			secondTask = new SecondTask(winners);
+			secondTask.setListener((TaskListener) this);
+		}
+
+	}
+
+	public void onFinishingSecondTask(ArrayList<Champion> winners)
+			throws IOException {
+
+		if (!winners.isEmpty()) {
+			thirdTask = new ThirdTask(winners);
+			thirdTask.setListener((TaskListener) this);
+		}
+
+	}
+
+	public void onFinishingThirdTask(Champion winner) {
+
+		// TODO: M4
+
+	}
 
 	//---------------------- Getter && Setter Methods ----------------------//
 	public ArrayList<Champion> getChampions() {
