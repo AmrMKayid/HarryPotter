@@ -1,18 +1,27 @@
 package harrypotter.model.tournament;
 
 import harrypotter.model.character.Champion;
+import harrypotter.model.character.Wizard;
 import harrypotter.model.magic.Potion;
 import harrypotter.model.world.Cell;
+import harrypotter.model.world.ChampionCell;
 import harrypotter.model.world.CollectibleCell;
 import harrypotter.model.world.EmptyCell;
 import harrypotter.model.world.PhysicalObstacle;
 import harrypotter.model.world.ObstacleCell;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class FirstTask extends Task {
+	
+	/*
+	 * Attributes
+	 */
+	ArrayList<Point> markedCells; //READ & WRITE
+	ArrayList<Champion> winners; //READ & WRITE
 
 	/*
 	 * Constructors
@@ -23,6 +32,10 @@ public class FirstTask extends Task {
 		Collections.shuffle(champions);
 		generateMap();
 		setCurrentChamp(getChampions().get(0));
+		
+		markedCells = new ArrayList<Point>();
+		winners = new ArrayList<Champion>();
+		markCells();
 
 	}
 
@@ -81,5 +94,80 @@ public class FirstTask extends Task {
 
 		}
 	}
+	
+	public void markCells() {
+
+		markedCells = new ArrayList<Point>();
+
+		ArrayList<Point> cells = new ArrayList<Point>();
+
+		Wizard current = (Wizard) getCurrentChamp();
+		int currentX = current.getLocation().x;
+		int currentY = current.getLocation().y;
+
+		cells.add(current.getLocation());
+
+		if (currentX + 1 <= 9)
+			cells.add(new Point(currentX + 1, currentY));
+		if (currentX - 1 >= 0)
+			cells.add(new Point(currentX - 1, currentY));
+		if (currentY - 1 >= 0)
+			cells.add(new Point(currentX, currentY - 1));
+		if (currentY + 1 <= 9)
+			cells.add(new Point(currentX, currentY + 1));
+
+		int i = 0;
+		while (i < 2) {
+			int r = (int) (Math.random() * cells.size());
+			if (!markedCells.contains(cells.get(r))) {
+				markedCells.add(cells.get(r));
+				i++;
+			}
+		}
+	}
+	
+	public void fire() {
+
+		Cell[][] map = getMap();
+
+		for (int i = 0; i < markedCells.size(); i++) {
+
+			Cell cell = map[markedCells.get(i).x][markedCells.get(i).y];
+
+			if (cell instanceof ChampionCell) {
+
+				Wizard current = (Wizard) (((ChampionCell) cell).getChamp());
+				int newHp = current.getHp() - 150;
+				if (newHp <= 0) {
+
+					current.setHp(0);
+					map[markedCells.get(i).x][markedCells.get(i).y] = new EmptyCell();
+					getChampions().remove(((ChampionCell) cell).getChamp());
+
+				} else {
+					current.setHp(newHp);
+				}
+			}
+		}
+
+	}
+
+	//---------------------- Getter && Setter Methods ----------------------//
+	public ArrayList<Point> getMarkedCells() {
+		return markedCells;
+	}
+
+	public void setMarkedCells(ArrayList<Point> markedCells) {
+		this.markedCells = markedCells;
+	}
+	
+	public ArrayList<Champion> getWinners() {
+		return winners;
+	}
+
+	public void setWinners(ArrayList<Champion> winners) {
+		this.winners = winners;
+	}
+	//#####################################################################//
 
 }
