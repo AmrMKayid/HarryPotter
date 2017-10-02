@@ -1,14 +1,17 @@
 package harrypotter.model.tournament;
 
 import harrypotter.model.character.Champion;
+import harrypotter.model.character.Wizard;
 import harrypotter.model.world.Cell;
 import harrypotter.model.world.ChampionCell;
 import harrypotter.model.world.CupCell;
+import harrypotter.model.world.Direction;
 import harrypotter.model.world.EmptyCell;
 import harrypotter.model.world.PhysicalObstacle;
 import harrypotter.model.world.ObstacleCell;
 import harrypotter.model.world.WallCell;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -102,6 +105,154 @@ public class ThirdTask extends Task {
 		}
 
 		br.close();
+
+	}
+	
+	public void moveForward() throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		Point location = current.getLocation();
+
+		Cell next = getMap()[location.x - 1][location.y];
+
+		if (next instanceof CupCell) {
+
+			getMap()[location.x][location.y] = new EmptyCell();
+			getMap()[location.x - 1][location.y] = new EmptyCell();
+			current.setLocation(new Point(location.x - 1, location.y));
+
+			getChampions().remove(current);
+
+			if (getListener() != null)
+				getListener().onFinishingThirdTask((Champion) current);
+
+		} else {
+			super.moveForward();
+		}
+	}
+
+	public void moveBackward() throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		Point location = current.getLocation();
+
+		Cell next = getMap()[location.x + 1][location.y];
+
+		if (next instanceof CupCell) {
+
+			getMap()[location.x][location.y] = new EmptyCell();
+			getMap()[location.x + 1][location.y] = new EmptyCell();
+			current.setLocation(new Point(location.x + 1, location.y));
+
+			getChampions().remove(current);
+
+			if (getListener() != null)
+				getListener().onFinishingThirdTask((Champion) current);
+
+		} else {
+			super.moveBackward();
+		}
+	}
+
+	public void moveLeft() throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		Point location = current.getLocation();
+
+		Cell next = getMap()[location.x][location.y - 1];
+
+		if (next instanceof CupCell) {
+
+			getMap()[location.x][location.y] = new EmptyCell();
+			getMap()[location.x][location.y - 1] = new EmptyCell();
+			current.setLocation(new Point(location.x, location.y - 1));
+
+			getChampions().remove(current);
+
+			if (getListener() != null)
+				getListener().onFinishingThirdTask((Champion) current);
+
+		} else {
+			super.moveLeft();
+		}
+	}
+
+	public void moveRight() throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		Point location = current.getLocation();
+
+		Cell next = getMap()[location.x][location.y + 1];
+
+		if (next instanceof CupCell) {
+
+			getMap()[location.x][location.y] = new EmptyCell();
+			getMap()[location.x][location.y + 1] = new EmptyCell();
+			current.setLocation(new Point(location.x, location.y + 1));
+
+			getChampions().remove(current);
+
+			if (getListener() != null)
+				getListener().onFinishingThirdTask((Champion) current);
+
+		} else {
+			super.moveRight();
+		}
+	}
+
+	public void onSlytherinTrait(Direction d) throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+		current.setTraitCooldown(10);
+		super.onSlytherinTrait(d);
+
+	}
+
+	public Object onRavenclawTrait() {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		ArrayList<Direction> result = new ArrayList<Direction>();
+
+		int x = 0;
+		int y = 0;
+		for (int i = 0; i < getMap().length; i++) {
+			for (int j = 0; j < getMap()[i].length; j++) {
+
+				Cell c = getMap()[i][j];
+
+				if (c instanceof CupCell) {
+
+					x = i;
+					y = j;
+					break;
+
+				}
+			}
+		}
+
+		int currentX = current.getLocation().x;
+		int currentY = current.getLocation().y;
+
+		if (y > currentY)
+			result.add(Direction.RIGHT);
+		else if (y < currentY)
+			result.add(Direction.LEFT);
+
+		if (x > currentX)
+			result.add(Direction.BACKWARD);
+		else if (x < currentX)
+			result.add(Direction.FORWARD);
+
+		setTraitActivated(true);
+
+		current.setTraitCooldown(7);
+
+		return result;
 
 	}
 }

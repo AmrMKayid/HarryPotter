@@ -1,11 +1,13 @@
 package harrypotter.model.tournament;
 
 import harrypotter.model.character.Champion;
+import harrypotter.model.character.HufflepuffWizard;
 import harrypotter.model.character.Wizard;
 import harrypotter.model.magic.Potion;
 import harrypotter.model.world.Cell;
 import harrypotter.model.world.ChampionCell;
 import harrypotter.model.world.CollectibleCell;
+import harrypotter.model.world.Direction;
 import harrypotter.model.world.EmptyCell;
 import harrypotter.model.world.PhysicalObstacle;
 import harrypotter.model.world.ObstacleCell;
@@ -149,6 +151,70 @@ public class FirstTask extends Task {
 				}
 			}
 		}
+
+	}
+	
+	public void finalizeAction() throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+
+		if (current.getLocation().x == 4 && current.getLocation().y == 4) {
+
+			winners.add(getCurrentChamp());
+			getChampions().remove(getCurrentChamp());
+			getMap()[4][4] = new EmptyCell();
+
+			if (!(current instanceof HufflepuffWizard && isTraitActivated()))
+				fire();
+
+			endTurn();
+
+		} else {
+
+			setAllowedMoves(getAllowedMoves() - 1);
+
+			if (getAllowedMoves() == 0) {
+
+				if (!(current instanceof HufflepuffWizard && isTraitActivated()))
+					fire();
+
+				endTurn();
+
+			}
+		}
+
+	}
+
+	public void endTurn() throws IOException {
+
+		if (getChampions().size() == 0) {
+
+			if (getListener() != null)
+				getListener().onFinishingFirstTask(winners);
+
+		} else {
+
+			super.endTurn();
+			markCells();
+
+		}
+
+	}
+
+	public void onSlytherinTrait(Direction d) throws IOException {
+
+		Wizard current = (Wizard) getCurrentChamp();
+		current.setTraitCooldown(6);
+		super.onSlytherinTrait(d);
+
+	}
+
+	public Object onRavenclawTrait() {
+
+		setTraitActivated(true);
+		Wizard current = (Wizard) getCurrentChamp();
+		current.setTraitCooldown(5);
+		return markedCells;
 
 	}
 
