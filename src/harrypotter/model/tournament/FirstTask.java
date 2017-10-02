@@ -20,8 +20,8 @@ public class FirstTask extends Task {
 	/*
 	 * Attributes
 	 */
-	ArrayList<Point> markedCells; //READ & WRITE
-	ArrayList<Champion> winners; //READ & WRITE
+	private ArrayList<Point> markedCells; //READ & WRITE
+	private ArrayList<Champion> winners; //READ & WRITE
 
 	/*
 	 * Constructors
