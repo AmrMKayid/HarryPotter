@@ -3,6 +3,13 @@
 # Game Overview:
 ##### The game is a role-playing game (RPG) featuring the Triwizard Tournament from the Harry Potter series. The game consists of different maps representing the three tasks of the tournament. The champions will compete against each other at the same time inside each map. The champions will take on the roles of Hogwarts students i.e. apprentice wizards.
 
+
+### Screenshots
+|                    Intro                         |                           Players                        |
+| :-----------------------------------------------:| :------------------------------------------------------: | 
+| <img src="resources/pics/intro.png" width="800px;"> | <img src="resources/pics/players.png" width="800px;">    |
+
+
 # MileStones:
 - [x] Milestone 1: Game Hierarchy
 
